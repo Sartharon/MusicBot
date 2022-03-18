@@ -13,6 +13,10 @@
 
 A cross-platform Discord music bot with a clean interface, and that is easy to set up and run yourself!
 
+# Fork additions/fixes
+  * Fix 403 error during youtube loading of songs
+  * Add PAPISID and PSID token support allowing playback of agerestriced videos (Consult the [documentation](https://github.com/Sartharon/MusicBot/blob/gh-pages/docs/youtube-age-restrictions.md) on how to get these tokens.)
+
 [![Setup](http://i.imgur.com/VvXYp5j.png)](https://jmusicbot.com/setup)
 
 ## Features
