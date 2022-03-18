@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Instructions for how to allow the playback of age restricted Youtube videos">
+        <meta name="description" content="Instructions on how to allow the playback of age restricted YouTube videos">
       
       
       
@@ -18,7 +18,7 @@
     
     
       
-        <title>Youtube age restriction - JMusicBot Wiki</title>
+        <title>YouTube age restriction - JMusicBot Wiki</title>
       
     
     
@@ -66,8 +66,8 @@
 
   <!-- Open graph meta tags -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="JMusicBot Wiki - Youtube age restriction" />
-  <meta property="og:description" content="Instructions for how to allow the playback of age restricted Youtube videos" />
+  <meta property="og:title" content="JMusicBot Wiki - YouTube age restriction" />
+  <meta property="og:description" content="Instructions on how to allow the playback of age restricted YouTube videos" />
   <meta property="og:url" content="https://jmusicbot.com/youtube-age-restrictions/" />
   <meta property="og:image" content="https://jmusicbot.com/assets/images/logo.png" />
   <meta property="og:image:type" content="image/png" />
@@ -76,8 +76,8 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@jagrosh" />
   <meta name="twitter:creator" content="@jagrosh" />
-  <meta name="twitter:title" content="JMusicBot Wiki - Youtube age restriction" />
-  <meta name="twitter:description" content="Instructions for how to allow the playback of age restricted Youtube videos" />
+  <meta name="twitter:title" content="JMusicBot Wiki - YouTube age restriction" />
+  <meta name="twitter:description" content="Instructions on how to allow the playback of age restricted YouTube videos" />
   <meta name="twitter:image" content="https://jmusicbot.com/assets/images/logo.png" />
 
   </head>
@@ -130,7 +130,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Youtube age restriction
+              YouTube age restriction
             
           </span>
         </div>
@@ -589,17 +589,18 @@
                   </a>
                 
                 
-                  <h1>Youtube age restriction</h1>
+                  <h1>YouTube age restriction</h1>
                 
-                <p>The following steps is optional and works in Chrome and Microsoft Edge:
-1. Navigate to <a href="https://youtube.com">Youtube</a> and log in with your account.</p>
+                <p>The following steps are tested in Chrome and Microsoft Edge:
+1. Navigate to <a href="https://youtube.com">YouTube</a> and log in to your account.\
+   <em>Note: You need to have your birthday verified for this procedure to work. Consult the <a href="https://support.google.com/youtube/answer/3159776?hl=en-GB">official google documentation</a> if you have not done this as of yet!</em></p>
 <ol>
 <li>
-<p>Open the developer console and switch to the network tab by pressing <code>CTRL + Shift + I</code>.<br />
+<p>Open the developer console and switch to the network tab by pressing <code>CTRL + Shift + I</code>.\
 <img alt="Developer console - Network Tab" src="../assets/images/age-restriction/dev-Net.png" /></p>
 </li>
 <li>
-<p>Play an age restricted Youtube video (like <a href="https://www.youtube.com/watch?v=B3eAMGXFw1o">this</a>) while the network tab is open. You will see the network tab will fill with entries.<br />
+<p>Play an age restricted YouTube video (like <a href="https://www.youtube.com/watch?v=B3eAMGXFw1o">this one</a>) while the network tab is open. You will see the network tab filling with entries.\
 <img alt="Network Tab - filling with entries" src="../assets/images/age-restriction/dev-Net-filling.png" /></p>
 </li>
 <li>
@@ -609,24 +610,29 @@
 <li><em>next?</em></li>
 <li><em>browse?</em></li>
 <li>
-<p><em>log_event?</em>
+<p><em>log_event?</em>\
 <img alt="Network Tab - correct entry" src="../assets/images/age-restriction/dev-Entry.png" /></p>
 </li>
 <li>
-<p>On the right side scroll down to <strong>Request Header</strong> and search for <strong>cookie:</strong>. Select a different entry shown in step 4 if <strong>cookie:</strong> is not present. Right click on cookie and copy it and paste it in a text editor of your choice.
-<img alt="Entry - Request Header" src="../assets/images/age-restriction/dev-Entry.png" />
+<p>On the right side, scroll down to <strong>Request Header</strong> and search for <strong>cookie:</strong>. Select a different entry shown in step 4 if <strong>cookie:</strong> is not present. Right click on cookie and copy it and paste it in a text editor of your choice.\
+<img alt="Entry - Request Header" src="../assets/images/age-restriction/dev-Entry.png" />\
 <img alt="Entry - Request Cookie" src="../assets/images/age-restriction/dev-Cookie.png" /></p>
 </li>
 <li>
-<p>Search for <strong>__Secure-3PAPISID=</strong> in the text and copy the token to the <strong>PAPISID =</strong> setting in your bots <em>config.txt</em>.
+<p>Search for <strong>__Secure-3PAPISID=</strong> in the text and copy the token to the <strong>PAPISID =</strong> setting in your bots' <em>config.txt</em>. Select a different entry from the list shown in step 4 in case the token cannot be found and repeat steps 5 and 6.\
 <img alt="PAPISID" src="../assets/images/age-restriction/PAPISID.png" /></p>
 </li>
 <li>
-<p>Search for <strong>__Secure-3PSID=</strong> in the text and copy the token to the <strong>PSID =</strong> setting in your bots <em>config.txt</em>.
+<p>Search for <strong>__Secure-3PSID=</strong> in the text and copy the token to the <strong>PSID =</strong> setting in your bots' <em>config.txt</em>.\
 <img alt="PSID" src="../assets/images/age-restriction/PSID.png" /></p>
 </li>
 <li>
-<p>Restart your bot after adding those keys to your bots' config.txt</p>
+<p>Your bots' config file should have the following two new lines:\
+<strong>PAPISID = {YOUR_TOKEN_FROM_STEP_6}</strong>\
+<strong>PSID = {YOUR_TOKEN_FROM_STEP_7}</strong></p>
+</li>
+<li>
+<p>Start/Restart your bot. Enjoy!</p>
 </li>
 </ol>
                 
