@@ -29,11 +29,14 @@ import com.sedmelluq.discord.lavaplayer.source.nico.NicoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
-import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeHttpContextFilter;
 import com.typesafe.config.Config;
 import net.dv8tion.jda.api.entities.Guild;
+import com.sedmelluq.discord.lavaplayer.tools.http.ExtendedHttpConfigurable;
+import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools;
+import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterfaceManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAccessTokenTracker;
 
 /**
  *
@@ -68,12 +71,17 @@ public class PlayerManager extends DefaultAudioPlayerManager
         AudioSourceManagers.registerLocalSource(this);
 
         DuncteBotSources.registerAll(this, "en-US");
-        if (bot.getConfig().getPAPISID() != null && bot.getConfig().getPSID() != null)
-        {
-            YoutubeHttpContextFilter.setPAPISID(bot.getConfig().getPAPISID());
-            YoutubeHttpContextFilter.setPSID(bot.getConfig().getPSID());
-        }
         source(YoutubeAudioSourceManager.class).setPlaylistPageCount(10);
+        if (bot.getConfig().getYoutubeEmail() != null && bot.getConfig().getYoutubePwd() != null)
+        {
+            HttpInterfaceManager httpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager();
+            ExtendedHttpConfigurable httpConfiguration = source(YoutubeAudioSourceManager.class).getHttpConfiguration();
+            YoutubeHttpContextFilter youtubeHttpContextFilter = new YoutubeHttpContextFilter();
+            YoutubeAccessTokenTracker accessTokenTracker = new YoutubeAccessTokenTracker(httpInterfaceManager, bot.getConfig().getYoutubeEmail(), bot.getConfig().getYoutubePwd());
+            accessTokenTracker.updateMasterToken();
+            youtubeHttpContextFilter.setTokenTracker(accessTokenTracker);
+            httpConfiguration.setHttpContextFilter(youtubeHttpContextFilter);
+        }
     }
     
     public Bot getBot()
