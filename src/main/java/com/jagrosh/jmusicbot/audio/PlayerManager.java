@@ -78,7 +78,15 @@ public class PlayerManager extends DefaultAudioPlayerManager
             ExtendedHttpConfigurable httpConfiguration = source(YoutubeAudioSourceManager.class).getHttpConfiguration();
             YoutubeHttpContextFilter youtubeHttpContextFilter = new YoutubeHttpContextFilter();
             YoutubeAccessTokenTracker accessTokenTracker = new YoutubeAccessTokenTracker(httpInterfaceManager, bot.getConfig().getYoutubeEmail(), bot.getConfig().getYoutubePwd());
-            accessTokenTracker.updateMasterToken();
+            while (accessTokenTracker.getMasterToken() == null) {
+                //Busy waiting for the master token
+            }
+            while (accessTokenTracker.getAccessToken() == null) {
+                //Busy waiting for the access token
+            }
+            while (accessTokenTracker.getVisitorId() == null) {
+                //Busy waiting for the visitor token
+            }
             youtubeHttpContextFilter.setTokenTracker(accessTokenTracker);
             httpConfiguration.setHttpContextFilter(youtubeHttpContextFilter);
         }
