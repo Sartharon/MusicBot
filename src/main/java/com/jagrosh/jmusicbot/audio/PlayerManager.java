@@ -21,6 +21,7 @@ import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeHttpContextFilter;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
@@ -29,12 +30,8 @@ import com.sedmelluq.discord.lavaplayer.source.nico.NicoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeHttpContextFilter;
-import com.typesafe.config.Config;
+import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import net.dv8tion.jda.api.entities.Guild;
-import com.sedmelluq.discord.lavaplayer.tools.http.ExtendedHttpConfigurable;
-import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterfaceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAccessTokenTracker;
 
@@ -57,6 +54,23 @@ public class PlayerManager extends DefaultAudioPlayerManager
 
         YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true);
         yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
+        if (bot.getConfig().getYoutubeEmail() != null && bot.getConfig().getYoutubePwd() != null)
+        {            
+            YoutubeHttpContextFilter youtubeHttpContextFilter = new YoutubeHttpContextFilter();
+            HttpInterfaceManager httpInterfaceManager = yt.getHttpInterfaceManager();
+            YoutubeAccessTokenTracker accessTokenTracker = new YoutubeAccessTokenTracker(httpInterfaceManager, bot.getConfig().getYoutubeEmail(), bot.getConfig().getYoutubePwd());
+            while (accessTokenTracker.getMasterToken() == null) {
+                //Busy waiting for the master token
+            }
+            while (accessTokenTracker.getAccessToken() == null) {
+                //Busy waiting for the access token
+            }
+            while (accessTokenTracker.getVisitorId() == null) {
+                //Busy waiting for the visitor token
+            }
+            youtubeHttpContextFilter.setTokenTracker(accessTokenTracker);
+            httpInterfaceManager.setHttpContextFilter(youtubeHttpContextFilter);
+        }
         registerSourceManager(yt);
 
         registerSourceManager(SoundCloudAudioSourceManager.createDefault());
@@ -71,25 +85,6 @@ public class PlayerManager extends DefaultAudioPlayerManager
         AudioSourceManagers.registerLocalSource(this);
 
         DuncteBotSources.registerAll(this, "en-US");
-        source(YoutubeAudioSourceManager.class).setPlaylistPageCount(10);
-        if (bot.getConfig().getYoutubeEmail() != null && bot.getConfig().getYoutubePwd() != null)
-        {
-            HttpInterfaceManager httpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager();
-            ExtendedHttpConfigurable httpConfiguration = source(YoutubeAudioSourceManager.class).getHttpConfiguration();
-            YoutubeHttpContextFilter youtubeHttpContextFilter = new YoutubeHttpContextFilter();
-            YoutubeAccessTokenTracker accessTokenTracker = new YoutubeAccessTokenTracker(httpInterfaceManager, bot.getConfig().getYoutubeEmail(), bot.getConfig().getYoutubePwd());
-            while (accessTokenTracker.getMasterToken() == null) {
-                //Busy waiting for the master token
-            }
-            while (accessTokenTracker.getAccessToken() == null) {
-                //Busy waiting for the access token
-            }
-            while (accessTokenTracker.getVisitorId() == null) {
-                //Busy waiting for the visitor token
-            }
-            youtubeHttpContextFilter.setTokenTracker(accessTokenTracker);
-            httpConfiguration.setHttpContextFilter(youtubeHttpContextFilter);
-        }
     }
     
     public Bot getBot()
