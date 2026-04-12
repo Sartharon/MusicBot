@@ -16,8 +16,12 @@ A cross-platform Discord music bot with a clean interface, and that is easy to s
 # Fork additions/fixes
   * Fix 403 error during loading of YouTube songs/videos
   * ~~Add PAPISID and PSID token support allowing playback of age restricted videos (Consult the [documentation](https://github.com/Sartharon/MusicBot/blob/gh-pages/docs/youtube-age-restrictions.md) on how to get these tokens)~~
-  * Use Google account to play age restricted songs/videos (Consult [example config](https://github.com/Sartharon/MusicBot/blob/fixYoutube/src/main/resources/reference.conf) - Variables: YoutubeEmail/YoutubePassword)
+  * **Recommend**: Use Oauth with a burner account for age restricted songs/videos (set `useyoutubeoauth2` to `true`) [implementation follows https://github.com/d-pacheco/MusicBot/pull/2/changes]
+  * **Not recommended**: Use a burner Google account to play age restricted songs/videos (Consult [example config](https://github.com/Sartharon/MusicBot/blob/fixYoutube/src/main/resources/reference.conf) - Variables: YoutubeEmail/YoutubePassword)
   * Update LavaPlayer to an actively maintained [fork](https://github.com/lavalink-devs/youtube-source)
+  * Update JDA to 6.4.x
+  * Update Java to 17
+  * Implement required DAVE E2E encryption for Discord via [libdave-jvm](https://github.com/KyokoBot/libdave-jvm)
 
 [![Setup](http://i.imgur.com/VvXYp5j.png)](https://jmusicbot.com/setup)
 
