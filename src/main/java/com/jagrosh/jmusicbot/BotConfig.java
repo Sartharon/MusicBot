@@ -21,8 +21,12 @@ import com.jagrosh.jmusicbot.utils.TimeUtil;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.typesafe.config.*;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 
@@ -41,8 +45,8 @@ public class BotConfig
     private Path path = null;
     private String token, prefix, altprefix, helpWord, playlistsFolder, logLevel,
             successEmoji, warningEmoji, errorEmoji, loadingEmoji, searchingEmoji,
-            evalEngine, YoutubeEmail, YoutubePwd;
-    private boolean stayInChannel, songInGame, npImages, updatealerts, useEval, dbots;
+            evalEngine, YoutubeEmail, YoutubePwd, youtubeToken;
+    private boolean stayInChannel, songInGame, npImages, updatealerts, useEval, dbots, useyoutubeoauth2;
     private long owner, maxSeconds, aloneTimeUntilStop;
     private int maxYTPlaylistPages;
     private double skipratio;
@@ -68,8 +72,8 @@ public class BotConfig
             path = getConfigPath();
             
             // load in the config file, plus the default values
-            //Config config = ConfigFactory.parseFile(path.toFile()).withFallback(ConfigFactory.load());
-            Config config = ConfigFactory.load();
+            Config config = ConfigFactory.parseFile(path.toFile()).withFallback(ConfigFactory.load());
+            //Config config = ConfigFactory.load();
             
             // set values
             token = config.getString("token");
@@ -98,6 +102,8 @@ public class BotConfig
             aliases = config.getConfig("aliases");
             transforms = config.getConfig("transforms");
             skipratio = config.getDouble("skipratio");
+            useyoutubeoauth2 = config.getBoolean("useyoutubeoauth2");
+            youtubeToken = config.getString("youtubetoken");
             YoutubeEmail = config.getString("YoutubeEmail");
             YoutubePwd = config.getString("YoutubePassword");
             dbots = owner == 113156185389092864L;
@@ -186,7 +192,7 @@ public class BotConfig
                 : original.substring(original.indexOf(START_TOKEN)+START_TOKEN.length(), original.indexOf(END_TOKEN)).trim();
     }
     
-    private static Path getConfigPath()
+    public static Path getConfigPath()
     {
         Path path = OtherUtil.getPath(System.getProperty("config.file", System.getProperty("config", "config.txt")));
         if(path.toFile().exists())
@@ -393,4 +399,53 @@ public class BotConfig
     {
         return YoutubePwd;
     }
+
+    public boolean useYoutubeOAuth2()
+    {
+        return useyoutubeoauth2;
+    }
+
+    public String getYoutubeToken()
+    {
+        return youtubeToken;
+    }
+
+    public void setYoutubeToken(String token)
+    {
+        if (!useyoutubeoauth2) {
+            return;
+        }
+        this.youtubeToken = token;
+        saveYoutubeToken();
+    }
+
+    public void saveYoutubeToken() {
+        try {
+            List<String> currentConfig = Files.readAllLines(BotConfig.getConfigPath(), StandardCharsets.UTF_8);
+            List<String> newConfig = new ArrayList<>();
+
+            for (int i = 0; i < currentConfig.size(); i++) {
+                String line = currentConfig.get(i);
+
+                if (line.trim().startsWith("youtubetoken")) { 
+                    continue; // Skip old token lines
+                }
+
+                // Add old config lines
+                newConfig.add(line);
+
+                if (line.trim().startsWith("useyoutubeoauth2")) {
+                    newConfig.add("");
+                    newConfig.add("// DO NOT EDIT THIS VALUE MANUALLY — re-authentication may-be be required");
+                    newConfig.add("youtubetoken = \"" + youtubeToken + "\"");
+                }
+            }
+
+            Files.write(BotConfig.getConfigPath(), newConfig, StandardCharsets.UTF_8);
+
+        } catch (IOException ex) {
+            prompt.alert(Prompt.Level.ERROR, "JMusicBot Config", "An error occurred writing the new youtube token config file: " + ex.getMessage());
+        }
+    }
+
 }

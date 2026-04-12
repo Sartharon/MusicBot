@@ -31,9 +31,17 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.YoutubeSourceOptions;
+import dev.lavalink.youtube.clients.AndroidVr;
+import dev.lavalink.youtube.clients.MWeb;
+import dev.lavalink.youtube.clients.Tv;
+import dev.lavalink.youtube.clients.TvHtml5Simply;
+import dev.lavalink.youtube.clients.skeleton.Client;
 import net.dv8tion.jda.api.entities.Guild;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterfaceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAccessTokenTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -41,6 +49,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAccessTokenTracker
  */
 public class PlayerManager extends DefaultAudioPlayerManager
 {
+    private final static Logger LOGGER = LoggerFactory.getLogger(PlayerManager.class);
     private final Bot bot;
     
     public PlayerManager(Bot bot)
@@ -52,9 +61,38 @@ public class PlayerManager extends DefaultAudioPlayerManager
     {
         TransformativeAudioSourceManager.createTransforms(bot.getConfig().getTransforms()).forEach(t -> registerSourceManager(t));
 
-        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true);
+        YoutubeSourceOptions options = new YoutubeSourceOptions()
+                .setAllowSearch(true)
+                .setAllowDirectVideoIds(true)
+                .setAllowDirectPlaylistIds(true);
+        Client[] clients;
+        if(bot.getConfig().useYoutubeOAuth2())
+        {
+            // url, password, userAgent (userAgent is optional, but nice for metrics)
+            options.setRemoteCipher("https://cipher.kikkia.dev/", null, "jmusicbot");
+            clients = new Client[] {
+                    new TvHtml5Simply(),
+                    new Tv()
+            };
+        }
+        else
+        {
+            // Clients are required even without OAuth to properly handle YouTube URLs
+            clients = new Client[] {
+                    new AndroidVr(),
+                    new MWeb()
+            };
+        }
+
+        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(options, clients);
+
         yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
-        if (bot.getConfig().getYoutubeEmail() != null && bot.getConfig().getYoutubePwd() != null)
+        if (bot.getConfig().useYoutubeOAuth2())
+        {
+            yt.useOauth2(bot.getConfig().getYoutubeToken(), false);
+            LOGGER.debug("Using YouTube OAuth2 refresh token {}", bot.getConfig().getYoutubeToken());
+        }
+        else if (bot.getConfig().getYoutubeEmail() != null && bot.getConfig().getYoutubePwd() != null)
         {            
             YoutubeHttpContextFilter youtubeHttpContextFilter = new YoutubeHttpContextFilter();
             HttpInterfaceManager httpInterfaceManager = yt.getHttpInterfaceManager();

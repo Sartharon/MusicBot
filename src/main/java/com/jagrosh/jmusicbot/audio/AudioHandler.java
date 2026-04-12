@@ -203,7 +203,19 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
 
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
-        LoggerFactory.getLogger("AudioHandler").error("Track " + track.getIdentifier() + " has failed to play", exception);
+        if (exception.getMessage().equals("Sign in to confirm you're not a bot")
+            || exception.getMessage().equals("Please sign in")
+            || exception.getMessage().equals("This video requires login."))
+        {
+            LoggerFactory.getLogger("AudioHandler").error(
+                    "Track " + track.getIdentifier() + " has failed to play: " + exception.getMessage() + ". "
+                            + "You will need to sign in to Google to play YouTube tracks. "
+                            + "More info: https://jmusicbot.com/youtube-oauth2");
+        }
+        else
+        {
+            LoggerFactory.getLogger("AudioHandler").error("Track " + track.getIdentifier() + " has failed to play", exception);
+        }
     }
 
     @Override

@@ -25,6 +25,9 @@ import com.jagrosh.jmusicbot.audio.PlayerManager;
 import com.jagrosh.jmusicbot.gui.GUI;
 import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
+
+import com.jagrosh.jmusicbot.utils.YoutubeOauth2TokenHandler;
+
 import java.util.Objects;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
@@ -44,6 +47,7 @@ public class Bot
     private final PlaylistLoader playlists;
     private final NowplayingHandler nowplaying;
     private final AloneInVoiceHandler aloneInVoiceHandler;
+    private final YoutubeOauth2TokenHandler YoutubeOauth2TokenHandler;;
     
     private boolean shuttingDown = false;
     private JDA jda;
@@ -62,6 +66,8 @@ public class Bot
         this.nowplaying.init();
         this.aloneInVoiceHandler = new AloneInVoiceHandler(this);
         this.aloneInVoiceHandler.init();
+        this.YoutubeOauth2TokenHandler = new YoutubeOauth2TokenHandler();
+        this.YoutubeOauth2TokenHandler.init(config);
     }
     
     public BotConfig getConfig()
@@ -107,6 +113,11 @@ public class Bot
     public JDA getJDA()
     {
         return jda;
+    }
+
+    public YoutubeOauth2TokenHandler getYouTubeOauth2Handler()
+    {
+        return YoutubeOauth2TokenHandler;
     }
     
     public void closeAudioConnection(long guildId)

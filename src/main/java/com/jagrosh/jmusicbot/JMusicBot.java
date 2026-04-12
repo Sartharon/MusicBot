@@ -77,6 +77,8 @@ public class JMusicBot
         // startup checks
         OtherUtil.checkVersion(prompt);
         OtherUtil.checkJavaVersion(prompt);
+
+        LOG.info("Starting JMusicBot " + OtherUtil.getCurrentVersion());
         
         // load config
         BotConfig config = new BotConfig(prompt);
